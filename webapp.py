@@ -5,6 +5,35 @@ from io import StringIO
 
 app = Flask(__name__)
 
+#trialSets is trialSetNum X question num X 3 [= 0: time, 1: App_num, 2: correct_answer_option]
+trialSet = [
+	[
+		[ 10, 2, 0], # End Trial 6
+		[ 20, 1, 1], # End Trial 1
+		[ 15, 3, 0], # End Trial 2
+		[ 10, 1, 1], # End Trial 3
+		[ 45, 3, 1], # End Trial 4
+		[ 10, 3, 3], # End Trial 5
+		[ 30, 2, 0], # End Trial 7
+		[ 15, 2, 1], # End Trial 8
+		[ 15, 1, 0]  # End Trial 9
+	], # End Trial Set 1
+	[
+		[ 45, 1, 1], # End Trial 15
+		[ 20, 2, 1], # End Trial 14
+		[ 10, 1, 1], # End Trial 13
+		[ 15, 2, 0], # End Trial 12
+		[ 30, 3, 0], # End Trial 11
+		[ 10, 2, 1], # End Trial 10
+		[ 15, 1, 0], # End Trial 9
+		[ 15, 3, 0], # End Trial 8
+		[ 20, 3, 1]  # End Trial 7
+	]# End Trial Set 2
+]
+
+solo = True
+questionNum = 0
+
 WIDTH = 320
 HEIGHT = 180
 
@@ -41,12 +70,23 @@ $('img').unveil(1000);
 </script>
 </head>
 <body>
-
+<table style="width:100%; height:100%; border:none;"> 
 {% for image in images %}
-	<a class="image" href="{{ image.src[7:-4] }}" style="width: {{ image.width }}px; height: {{ image.height }}px; position: relative; top: 000px;">
-		<img src="{{ image.src }}" data-src="{{ image.src }}?w={{ image.width }}&amp;h={{ image.height }} " width="{{ image.width }}" height="{{ image.height }}" />  
-	</a>
+	<tr>
+		<td style="text-align: center; vertical-align: middle;">
+	    	<a class="image" 
+			href="{{ image.src[7:-4] }}" 
+			style="width: {{ image.width }}px; height: {{ image.height }}px; position: relative; text-align: center; vertical-align: middle; top: 000px;">
+			<img src="{{ image.src }}" data-src="{{ image.src }}?w={{ image.width }}&amp;h={{ image.height }} " width="{{ image.width }}" height="{{ image.height }}" />  
+			</a>
+			<a href="{{ image.src[7:-4] }}">
+				<H1>{{ image.src[8:-4] }}
+			</a>
+		</td>
+	</tr>
 {% endfor %}
+</table>
+
 </body>
 '''
 
@@ -116,12 +156,13 @@ def index():
 				'height': int(height),
 				'src': filename
 			})
-
+	# TODO: start ruinning the trialsets
 	return render_template_string(HOME, **{
 		'images': images
 	})
 
 @app.route('/fitbit')
+@app.route('/Fitbit')
 def fitbit():
 	return render_template_string(APP, **{
 		'bgimg': "./bg/fitbit.png"
@@ -129,6 +170,7 @@ def fitbit():
 
 
 @app.route('/weather')
+@app.route('/Weather')
 def weather():
 	# TODO: bad code can be same with argument
 	# TODO: change the answer value before showing
@@ -138,14 +180,50 @@ def weather():
 
 
 @app.route('/email')
+@app.route('/Email')
 def email():
 		return render_template_string(APP, **{
 		'bgimg': "./bg/email.png"
 	})
 
 
+# def Start_nxt_Trial():
+# 	string trial_line;
+# 	if (questionNum > -1)
+# 		trial_line = questionNum + ", " + 
+# 						time_asked + ", " + Time.time + ", " + 
+# 						trialSet[trialSetNum, questionNum, 1] + ", " + 
+# 						trialSet[trialSetNum, questionNum, 2] + ", " + 
+# 						GameObject.Find("Weather1").GetComponent<AppManager>().user_manual_override + ", " +
+# 						GameObject.Find("Email2").GetComponent<AppManager>().user_manual_override + ", " +
+# 						GameObject.Find("Fitbit3").GetComponent<AppManager>().user_manual_override;
+# 		sessionLog.WriteLine(trial_line);
+# 	questionNum++;
+# 	if (questionNum < 9)
+# 		time_to_ask_next_Q = trialSet[trialSetNum, questionNum, 0] + Time.time;
+# 	else
+# 		solo = false;
+	
+
+
 if __name__ == "__main__":
 	# For running on Server
 	#app.run(host = "0.0.0.0" , port = 4443, debug=True )
 	# For running on localhodt:5000
+	# Start running the trials
 	app.run()
+
+
+# //	{ 20, 2, 1}, // End Trial 10
+# ////	{{ 20, 3, 4}, // End Trial 11
+# //		{ 15, 2, 2}, // End Trial 12
+# //		{ 10, 1, 2}, // End Trial 13
+# //		{ 20, 2, 4}, // End Trial 14
+# ////		{ 10, 1, 4} // End Trial 15
+# //			{ 10, 2, 1}, // End Trial 6
+# //			{ 10, 3, 3}, // End Trial 5
+# //			{ 45, 3, 2}, // End Trial 4
+# //			{ 10, 1, 1}, // End Trial 3
+# //			{ 15, 3, 3}, // End Trial 2
+# //			{ 20, 1, 4} // End Trial 1
+# }
