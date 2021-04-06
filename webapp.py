@@ -1,5 +1,6 @@
 import os
-from flask import Flask, Response, request, abort, render_template_string, send_from_directory
+from flask import Flask, Response, request, abort, render_template_string, send_from_directory, redirect, url_for, request
+from markupsafe import escape
 from PIL import Image
 from io import StringIO
 
@@ -33,6 +34,7 @@ trialSet = [
 
 solo = True
 questionNum = 0
+ts_num = 0
 
 WIDTH = 320
 HEIGHT = 180
@@ -53,22 +55,24 @@ display: inline-block;
 margin: 3em 14px;
 background-color: #444;
 box-shadow: 0 0 10px rgba(0,0,0,0.3);
-
 }
+
 
 img {
 display: block;
 }
+
 </style>
 <script src="https://code.jquery.com/jquery-1.10.2.min.js" charset="utf-8"></script>
-<script src="http://luis-almeida.github.io/unveil/jquery.unveil.min.js" charset="utf-8"></script>
+<script src="http://luis-almeida.github.io/unveil/jquery.unveil.js" charset="utf-8"></script>
 <script>
-
 $(document).ready(function() {
 $('img').unveil(1000);
 });
 </script>
+
 </head>
+
 <body>
 <table style="width:100%; height:100%; border:none;"> 
 {% for image in images %}
@@ -77,10 +81,10 @@ $('img').unveil(1000);
 	    	<a class="image" 
 			href="{{ image.src[7:-4] }}" 
 			style="width: {{ image.width }}px; height: {{ image.height }}px; position: relative; text-align: center; vertical-align: middle; top: 000px;">
-			<img src="{{ image.src }}" data-src="{{ image.src }}?w={{ image.width }}&amp;h={{ image.height }} " width="{{ image.width }}" height="{{ image.height }}" />  
+			<img src="{{ image.src }}" data-src="{{ image.src }}" width="{{ image.width }}" height="{{ image.height }}" />  
 			</a>
 			<a href="{{ image.src[7:-4] }}">
-				<H1>{{ image.src[8:-4] }}
+				<H1 >{{ image.src[8:-4] }}
 			</a>
 		</td>
 	</tr>
@@ -102,10 +106,20 @@ body {
   background-size: 100% 100%;
 }
 </style>
+
+<script src="https://code.jquery.com/jquery-1.10.2.min.js" charset="utf-8"></script>
+<script src="http://luis-almeida.github.io/unveil/jquery.unveil.js" charset="utf-8"></script>
+<script>
+$(document).ready(function() {
+$('img').unveil(1000);
+});
+</script>
+
 </head>
+
 <body>
 <a class="back" href="/home" ">
-	<img src="./buttons/back.png" href="\\home" alt="HTML5 Icon" style="width:128px;height:128px;">
+	<img src="./buttons/back.png" data-src="./buttons/back.png" href="\\home" alt="HTML5 Icon" style="width:128px;height:128px;">
 </a>
 </body>
 </html>
@@ -134,6 +148,7 @@ def image(filename):
 	return send_from_directory('.', filename)
 
 @app.route('/')
+@app.route('/index')
 @app.route('/home')
 def index():
 	images = []
@@ -186,6 +201,17 @@ def email():
 		'bgimg': "./bg/email.png"
 	})
 
+@app.route('/setnum', methods=['GET', 'POST'])
+def setTsNum():
+	if request.method == 'POST':
+		ts_num = request.form['tsnum']
+		print(ts_num)
+		return redirect(url_for('index'))
+	return '''<form method="post"> 
+				<label for="fname">Trial set num:</label><br>
+  				<input type="number" id="tsnum" name="tsnum"><br>
+				<H1><input type=submit> 
+			</form>'''
 
 # def Start_nxt_Trial():
 # 	string trial_line;
@@ -204,7 +230,8 @@ def email():
 # 	else
 # 		solo = false;
 	
-
+def Update_answer():
+	trialSet[ts_num][2]
 
 if __name__ == "__main__":
 	# For running on Server
