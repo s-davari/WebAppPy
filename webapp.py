@@ -193,6 +193,7 @@ def index():
 def fitbit():
 	global questionNum
 	if questionNum >= 9:
+		questionNum = 0
 		return redirect('/setnum')
 	ansOption = trialSet[ts_num][questionNum][2]
 	bgImgUrl = "./bg/fitbit" + str(ansOption) + ".png"
@@ -206,6 +207,7 @@ def fitbit():
 def weather():
 	global questionNum
 	if questionNum >= 9:
+		questionNum = 0
 		return redirect('/setnum')
 	ansOption = trialSet[ts_num][questionNum][2]
 	bgImgUrl = "./bg/weather" + str(ansOption) + ".png"
@@ -219,6 +221,7 @@ def weather():
 def email():
 	global questionNum
 	if questionNum >= 9:
+		questionNum = 0
 		return redirect('/setnum')
 	ansOption = trialSet[ts_num][questionNum][2]
 	bgImgUrl = "./bg/email" + str(ansOption) + ".png"
@@ -229,8 +232,9 @@ def email():
 @app.route('/setnum', methods=['GET', 'POST'])
 def setTsNum():
 	if request.method == 'POST':
+		global questionNum
 		ts_num = request.form['tsnum']
-		print(ts_num)
+		questionNum = 0
 		return redirect(url_for('index'))
 	return '''<form method="post"> 
 				<label for="fname">Trial set num:</label><br>
