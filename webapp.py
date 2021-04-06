@@ -14,7 +14,7 @@ trialSet = [
 		[ 15, 3, 0], # End Trial 2
 		[ 10, 1, 1], # End Trial 3
 		[ 45, 3, 1], # End Trial 4
-		[ 10, 3, 3], # End Trial 5
+		[ 10, 3, 0], # End Trial 5
 		[ 30, 2, 0], # End Trial 7
 		[ 15, 2, 1], # End Trial 8
 		[ 15, 1, 0]  # End Trial 9
@@ -57,7 +57,6 @@ background-color: #444;
 box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
-
 img {
 display: block;
 }
@@ -66,10 +65,16 @@ display: block;
 <script src="https://code.jquery.com/jquery-1.10.2.min.js" charset="utf-8"></script>
 <script src="http://luis-almeida.github.io/unveil/jquery.unveil.js" charset="utf-8"></script>
 <script>
-$(document).ready(function() {
-$('img').unveil(1000);
-});
+	$(document).ready(function() {
+	$('img').unveil(1000);
+	});
 </script>
+
+ <script>
+const audio1 = new Audio("./audio/1.mp3");
+const audio2 = new Audio("./audio/2.mp3");
+const audio3 = new Audio("./audio/3.mp3");
+ </script>
 
 </head>
 
@@ -90,6 +95,9 @@ $('img').unveil(1000);
 	</tr>
 {% endfor %}
 </table>
+ <script>
+audio1.play();
+ </script>
 
 </body>
 '''
@@ -179,26 +187,33 @@ def index():
 @app.route('/fitbit')
 @app.route('/Fitbit')
 def fitbit():
+	global questionNum
+	bgImgUrl = "./bg/fitbit" + str(trialSet[ts_num][questionNum][2]) + ".png"
+	questionNum += 1
 	return render_template_string(APP, **{
-		'bgimg': "./bg/fitbit.png"
+	'bgimg': bgImgUrl
 	})
 
 
 @app.route('/weather')
 @app.route('/Weather')
 def weather():
-	# TODO: bad code can be same with argument
-	# TODO: change the answer value before showing
-		return render_template_string(APP, **{
-		'bgimg': "./bg/weather.png"
+	global questionNum
+	bgImgUrl = "./bg/weather" + str(trialSet[ts_num][questionNum][2]) + ".png"
+	questionNum += 1
+	return render_template_string(APP, **{
+	'bgimg': bgImgUrl
 	})
 
 
 @app.route('/email')
 @app.route('/Email')
 def email():
-		return render_template_string(APP, **{
-		'bgimg': "./bg/email.png"
+	global questionNum
+	bgImgUrl = "./bg/email" + str(trialSet[ts_num][questionNum][2]) + ".png"
+	questionNum += 1
+	return render_template_string(APP, **{
+	'bgimg': bgImgUrl
 	})
 
 @app.route('/setnum', methods=['GET', 'POST'])
