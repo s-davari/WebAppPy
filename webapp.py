@@ -205,7 +205,7 @@ def fitbit():
 @app.route('/Weather')
 def weather():
 	global questionNum
-	if questionNum >= 10:
+	if questionNum >= 9:
 		return redirect('/setnum')
 	ansOption = trialSet[ts_num][questionNum][2]
 	bgImgUrl = "./bg/weather" + str(ansOption) + ".png"
@@ -218,7 +218,7 @@ def weather():
 @app.route('/Email')
 def email():
 	global questionNum
-	if questionNum >= 10:
+	if questionNum >= 9:
 		return redirect('/setnum')
 	ansOption = trialSet[ts_num][questionNum][2]
 	bgImgUrl = "./bg/email" + str(ansOption) + ".png"
