@@ -68,17 +68,15 @@ display: block;
 	$(document).ready(function() {
 	$('img').unveil(1000);
 	});
+	const audio1 = new Audio("./audio/1.mp3");
+	const audio2 = new Audio("./audio/2.mp3");
+	const audio3 = new Audio("./audio/3.mp3");
 </script>
-
- <script>
-const audio1 = new Audio("./audio/1.mp3");
-const audio2 = new Audio("./audio/2.mp3");
-const audio3 = new Audio("./audio/3.mp3");
- </script>
 
 </head>
 
 <body>
+<p> Trial number: "{{ t_num }}"
 <table style="width:100%; height:100%; border:none;"> 
 {% for image in images %}
 	<tr>
@@ -98,7 +96,6 @@ const audio3 = new Audio("./audio/3.mp3");
  <script>
 audio1.play();
  </script>
-
 </body>
 '''
 
@@ -126,8 +123,8 @@ $('img').unveil(1000);
 </head>
 
 <body>
-<a class="back" href="/home" ">
-	<img src="./buttons/back.png" data-src="./buttons/back.png" href="\\home" alt="HTML5 Icon" style="width:128px;height:128px;">
+<a class="back" href="/nxtTrial" ">
+	<img src="./buttons/back.png" data-src="./buttons/back.png" href="\\nxtTrial" alt="HTML5 Icon" style="width:128px;height:128px;">
 </a>
 </body>
 </html>
@@ -155,6 +152,13 @@ def image(filename):
 
 	return send_from_directory('.', filename)
 
+
+@app.route('/nxtTrial')
+def nxtTrial():
+	global questionNum
+	questionNum += 1
+	return redirect('/home')
+
 @app.route('/')
 @app.route('/index')
 @app.route('/home')
@@ -181,15 +185,17 @@ def index():
 			})
 	# TODO: start ruinning the trialsets
 	return render_template_string(HOME, **{
-		'images': images
+		'images': images, 't_num' : questionNum
 	})
 
 @app.route('/fitbit')
 @app.route('/Fitbit')
 def fitbit():
 	global questionNum
-	bgImgUrl = "./bg/fitbit" + str(trialSet[ts_num][questionNum][2]) + ".png"
-	questionNum += 1
+	if questionNum >= 9:
+		return redirect('/setnum')
+	ansOption = trialSet[ts_num][questionNum][2]
+	bgImgUrl = "./bg/fitbit" + str(ansOption) + ".png"
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
 	})
@@ -199,8 +205,10 @@ def fitbit():
 @app.route('/Weather')
 def weather():
 	global questionNum
-	bgImgUrl = "./bg/weather" + str(trialSet[ts_num][questionNum][2]) + ".png"
-	questionNum += 1
+	if questionNum >= 10:
+		return redirect('/setnum')
+	ansOption = trialSet[ts_num][questionNum][2]
+	bgImgUrl = "./bg/weather" + str(ansOption) + ".png"
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
 	})
@@ -210,8 +218,10 @@ def weather():
 @app.route('/Email')
 def email():
 	global questionNum
-	bgImgUrl = "./bg/email" + str(trialSet[ts_num][questionNum][2]) + ".png"
-	questionNum += 1
+	if questionNum >= 10:
+		return redirect('/setnum')
+	ansOption = trialSet[ts_num][questionNum][2]
+	bgImgUrl = "./bg/email" + str(ansOption) + ".png"
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
 	})
