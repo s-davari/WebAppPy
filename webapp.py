@@ -48,13 +48,18 @@ HOME = '''
 <style>
 body {
 margin: 0;
-background-color: #333;
+background-color: #FFFFFF;
 }
 .image {
 display: inline-block;
 margin: 3em 14px;
-background-color: #444;
+background-color: #FFFFFF;
 box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.centeredTable {
+    position:fixed;
+    top: 0px;
 }
 
 img {
@@ -68,19 +73,20 @@ display: block;
 	$(document).ready(function() {
 	$('img').unveil(1000);
 	});
-	const audio1 = new Audio("./audio/1.mp3");
-	const audio2 = new Audio("./audio/2.mp3");
-	const audio3 = new Audio("./audio/3.mp3");
+	<!--const audio1 = new Audio("./audio/1.mp3"); -->
+	<!--const audio2 = new Audio("./audio/2.mp3"); -->
+	<!--const audio3 = new Audio("./audio/3.mp3"); -->
 </script>
 
 </head>
 
 <body>
 <p> Trial number: "{{ t_num }}"
-<table style="width:100%; height:100%; border:none;"> 
-{% for image in images %}
+<table class="centeredTable" style="width:100%; height:100%; border:none;"> 
 	<tr>
-		<td style="text-align: center; vertical-align: middle;">
+{% for image in images %}
+
+		<td style="text-align: center; vertical-align: middle;"> 
 	    	<a class="image" 
 			href="{{ image.src[7:-4] }}" 
 			style="width: {{ image.width }}px; height: {{ image.height }}px; position: relative; text-align: center; vertical-align: middle; top: 000px;">
@@ -90,11 +96,12 @@ display: block;
 				<H1 >{{ image.src[8:-4] }}
 			</a>
 		</td>
-	</tr>
+
 {% endfor %}
+	</tr>
 </table>
  <script>
-audio1.play();
+<!--audio1.play();-->
  </script>
 </body>
 '''
