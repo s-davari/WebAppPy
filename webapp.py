@@ -3,7 +3,8 @@ from flask import Flask, Response, request, abort, render_template_string, send_
 from markupsafe import escape
 from PIL import Image
 from io import StringIO
-
+import random
+from time import localtime, strftime
 app = Flask(__name__)
 
 #trialSets is trialSetNum X question num X 3 [= 0: time, 1: App_num, 2: correct_answer_option]
@@ -31,6 +32,16 @@ trialSet = [
 		[ 20, 3, 1]  # End Trial 7
 	]# End Trial Set 2
 ]
+
+# Log files
+fitbit_file = open("Fitbit.csv", "a")
+weather_file = open("Weather.csv", "a")
+email_file = open("Email.csv", "a")
+	
+# fitbit_file.write("date_time, event")
+# weather_file.write("date_time, event")
+# email_file.write("date_time, event" )
+
 
 solo = True
 questionNum = 0
@@ -81,7 +92,7 @@ display: block;
 </head>
 
 <body>
-<p> Trial number: "{{ t_num }}"
+<!-- <p> Trial number: "{{ t_num }}" -->
 <table class="centeredTable" style="width:100%; height:100%; border:none;"> 
 	<tr>
 {% for image in images %}
@@ -130,9 +141,14 @@ $('img').unveil(1000);
 </head>
 
 <body>
-<a class="back" href="/nxtTrial" ">
-	<img src="./buttons/back.png" data-src="./buttons/back.png" href="\\nxtTrial" alt="HTML5 Icon" style="width:128px;height:128px;">
-</a>
+<!--
+	<a class="back" href="/nxtTrial" >
+		<img src="./buttons/back.png" data-src="./buttons/back.png" href="\\nxtTrial" alt="HTML5 Icon" style="width:128px;height:128px;">
+	</a>
+-->
+	<a class="back" href="/" >
+		<img src="./buttons/back.png" data-src="./buttons/back.png" href="/" alt="HTML5 Icon" style="width:128px;height:128px;">
+	</a>
 </body>
 </html>
 
@@ -160,11 +176,11 @@ def image(filename):
 	return send_from_directory('.', filename)
 
 
-@app.route('/nxtTrial')
-def nxtTrial():
-	global questionNum
-	questionNum += 1
-	return redirect('/home')
+# @app.route('/nxtTrial')
+# def nxtTrial():
+# 	global questionNum
+# 	questionNum += 1
+# 	return redirect('/home')
 
 @app.route('/')
 @app.route('/index')
@@ -192,18 +208,23 @@ def index():
 			})
 	# TODO: start ruinning the trialsets
 	return render_template_string(HOME, **{
-		'images': images, 't_num' : questionNum
+		'images': images #, 't_num' : questionNum
 	})
 
 @app.route('/fitbit')
 @app.route('/Fitbit')
 def fitbit():
-	global questionNum
-	if questionNum >= 9:
-		questionNum = 0
-		return redirect('/setnum')
-	ansOption = trialSet[ts_num][questionNum][2]
+	# global questionNum
+	# if questionNum >= 9:
+	# 	questionNum = 0
+	# 	return redirect('/setnum')
+	# ansOption = trialSet[ts_num][questionNum][2]
+	ansOption = random.randint(0, 100) % 6
 	bgImgUrl = "./bg/fitbit" + str(ansOption) + ".png"
+	
+	date_time = strftime("%m/%d/%y %I:%M:%S %p", localtime())
+	fitbit_file.write("\n" + date_time + ", " + str(ansOption))
+
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
 	})
@@ -212,12 +233,17 @@ def fitbit():
 @app.route('/weather')
 @app.route('/Weather')
 def weather():
-	global questionNum
-	if questionNum >= 9:
-		questionNum = 0
-		return redirect('/setnum')
-	ansOption = trialSet[ts_num][questionNum][2]
+	# global questionNum
+	# if questionNum >= 9:
+	# 	questionNum = 0
+	# 	return redirect('/setnum')
+	# ansOption = trialSet[ts_num][questionNum][2]
+	ansOption = random.randint(0, 100) % 6
 	bgImgUrl = "./bg/weather" + str(ansOption) + ".png"
+	
+	date_time = strftime("%m/%d/%y %I:%M:%S %p", localtime())
+	weather_file.write("\n" + date_time + ", " + str(ansOption))
+
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
 	})
@@ -226,28 +252,34 @@ def weather():
 @app.route('/email')
 @app.route('/Email')
 def email():
-	global questionNum
-	if questionNum >= 9:
-		questionNum = 0
-		return redirect('/setnum')
-	ansOption = trialSet[ts_num][questionNum][2]
+	# global questionNum
+	# if questionNum >= 9:
+	# 	questionNum = 0
+	# 	return redirect('/setnum')
+	# ansOption = trialSet[ts_num][questionNum][2]
+	ansOption = random.randint(0, 100) % 6
 	bgImgUrl = "./bg/email" + str(ansOption) + ".png"
+
+
+	date_time = strftime("%m/%d/%y %I:%M:%S %p", localtime())
+	email_file.write("\n" + date_time + ", " + str(ansOption))
+
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
 	})
 
-@app.route('/setnum', methods=['GET', 'POST'])
-def setTsNum():
-	if request.method == 'POST':
-		global questionNum
-		ts_num = request.form['tsnum']
-		questionNum = 0
-		return redirect(url_for('index'))
-	return '''<form method="post"> 
-				<label for="fname">Trial set num:</label><br>
-  				<input type="number" id="tsnum" name="tsnum"><br>
-				<H1><input type=submit> 
-			</form>'''
+# @app.route('/setnum', methods=['GET', 'POST'])
+# def setTsNum():
+# 	if request.method == 'POST':
+# 		global questionNum
+# 		ts_num = request.form['tsnum']
+# 		questionNum = 0
+# 		return redirect(url_for('index'))
+# 	return '''<form method="post"> 
+# 				<label for="fname">Trial set num:</label><br>
+#   				<input type="number" id="tsnum" name="tsnum"><br>
+# 				<H1><input type=submit> 
+# 			</form>'''
 
 # def Start_nxt_Trial():
 # 	string trial_line;
@@ -266,15 +298,22 @@ def setTsNum():
 # 	else
 # 		solo = false;
 	
-def Update_answer():
-	trialSet[ts_num][2]
+# def Update_answer():
+# 	trialSet[ts_num][2]
 
 if __name__ == "__main__":
 	# For running on Server
-	#app.run(host = "0.0.0.0" , port = 4443, debug=True )
-	# For running on localhodt:5000
-	# Start running the trials
-	app.run()
+	try:
+		#app.run(host = "0.0.0.0" , port = 4443, debug=True )
+		# For running on localhodt:5000
+		# Start running the trials
+
+		app.run()
+	finally:
+		fitbit_file.close()
+		weather_file.close()
+		email_file.close()
+	
 
 
 # //	{ 20, 2, 1}, // End Trial 10
