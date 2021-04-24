@@ -4,7 +4,11 @@ from markupsafe import escape
 from PIL import Image
 from io import StringIO
 import random
-from time import localtime, strftime
+from time import strftime
+from datetime import datetime
+from pytz import timezone
+tz = timezone('America/New_York')
+
 app = Flask(__name__)
 
 trialSet = [
@@ -199,9 +203,9 @@ def fitbit():
 	ansOption = random.randint(0, 100) % 6
 	bgImgUrl = "./bg/fitbit" + str(ansOption) + ".png"
 	
-	date_time = strftime("%m/%d/%y %I:%M:%S %p", localtime())
+	now =  datetime.now(tz).strftime("%m/%d/%y %I:%M:%S %p")
 	with open("Fitbit.csv", "a") as fitbit_file:
-		fitbit_file.write("\n" + date_time + ", " + str(ansOption))
+		fitbit_file.write("\n" + now + ", " + str(ansOption))
 
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
@@ -214,9 +218,9 @@ def weather():
 	ansOption = random.randint(0, 100) % 6
 	bgImgUrl = "./bg/weather" + str(ansOption) + ".png"
 	
-	date_time = strftime("%m/%d/%y %I:%M:%S %p", localtime())
+	now =  datetime.now(tz).strftime("%m/%d/%y %I:%M:%S %p")
 	with open("Weather.csv", "a") as weather_file:
-		weather_file.write("\n" + date_time + ", " + str(ansOption))
+		weather_file.write("\n" + now + ", " + str(ansOption))
 
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
@@ -229,10 +233,10 @@ def email():
 	ansOption = random.randint(0, 100) % 6
 	bgImgUrl = "./bg/email" + str(ansOption) + ".png"
 
-
-	date_time = strftime("%m/%d/%y %I:%M:%S %p", localtime())
+	
+	now =  datetime.now(tz).strftime("%m/%d/%y %I:%M:%S %p")
 	with open("Email.csv", "a") as email_file:
-		email_file.write("\n" + date_time + ", " + str(ansOption))
+		email_file.write("\n" + now + ", " + str(ansOption))
 
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
@@ -244,4 +248,4 @@ if __name__ == "__main__":
 	app.run(host = "0.0.0.0" , port = 4443, debug=True )
 	
 	# For running on localhodt:5000
-	#app.run()
+	# app.run()
