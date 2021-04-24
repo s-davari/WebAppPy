@@ -7,7 +7,6 @@ import random
 from time import localtime, strftime
 app = Flask(__name__)
 
-#trialSets is trialSetNum X question num X 3 [= 0: time, 1: App_num, 2: correct_answer_option]
 trialSet = [
 	[
 		[ 10, 2, 0], # End Trial 6
@@ -32,16 +31,6 @@ trialSet = [
 		[ 20, 3, 1]  # End Trial 7
 	]# End Trial Set 2
 ]
-
-# Log files
-fitbit_file = open("Fitbit.csv", "a")
-weather_file = open("Weather.csv", "a")
-email_file = open("Email.csv", "a")
-	
-# fitbit_file.write("date_time, event")
-# weather_file.write("date_time, event")
-# email_file.write("date_time, event" )
-
 
 solo = True
 questionNum = 0
@@ -176,12 +165,6 @@ def image(filename):
 	return send_from_directory('.', filename)
 
 
-# @app.route('/nxtTrial')
-# def nxtTrial():
-# 	global questionNum
-# 	questionNum += 1
-# 	return redirect('/home')
-
 @app.route('/')
 @app.route('/index')
 @app.route('/home')
@@ -206,7 +189,6 @@ def index():
 				'height': int(height),
 				'src': filename
 			})
-	# TODO: start ruinning the trialsets
 	return render_template_string(HOME, **{
 		'images': images #, 't_num' : questionNum
 	})
@@ -214,16 +196,12 @@ def index():
 @app.route('/fitbit')
 @app.route('/Fitbit')
 def fitbit():
-	# global questionNum
-	# if questionNum >= 9:
-	# 	questionNum = 0
-	# 	return redirect('/setnum')
-	# ansOption = trialSet[ts_num][questionNum][2]
 	ansOption = random.randint(0, 100) % 6
 	bgImgUrl = "./bg/fitbit" + str(ansOption) + ".png"
 	
 	date_time = strftime("%m/%d/%y %I:%M:%S %p", localtime())
-	fitbit_file.write("\n" + date_time + ", " + str(ansOption))
+	with open("Fitbit.csv", "a") as fitbit_file:
+		fitbit_file.write("\n" + date_time + ", " + str(ansOption))
 
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
@@ -233,16 +211,12 @@ def fitbit():
 @app.route('/weather')
 @app.route('/Weather')
 def weather():
-	# global questionNum
-	# if questionNum >= 9:
-	# 	questionNum = 0
-	# 	return redirect('/setnum')
-	# ansOption = trialSet[ts_num][questionNum][2]
 	ansOption = random.randint(0, 100) % 6
 	bgImgUrl = "./bg/weather" + str(ansOption) + ".png"
 	
 	date_time = strftime("%m/%d/%y %I:%M:%S %p", localtime())
-	weather_file.write("\n" + date_time + ", " + str(ansOption))
+	with open("Weather.csv", "a") as weather_file:
+		weather_file.write("\n" + date_time + ", " + str(ansOption))
 
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
@@ -252,80 +226,22 @@ def weather():
 @app.route('/email')
 @app.route('/Email')
 def email():
-	# global questionNum
-	# if questionNum >= 9:
-	# 	questionNum = 0
-	# 	return redirect('/setnum')
-	# ansOption = trialSet[ts_num][questionNum][2]
 	ansOption = random.randint(0, 100) % 6
 	bgImgUrl = "./bg/email" + str(ansOption) + ".png"
 
 
 	date_time = strftime("%m/%d/%y %I:%M:%S %p", localtime())
-	email_file.write("\n" + date_time + ", " + str(ansOption))
+	with open("Email.csv", "a") as email_file:
+		email_file.write("\n" + date_time + ", " + str(ansOption))
 
 	return render_template_string(APP, **{
 	'bgimg': bgImgUrl
 	})
 
-# @app.route('/setnum', methods=['GET', 'POST'])
-# def setTsNum():
-# 	if request.method == 'POST':
-# 		global questionNum
-# 		ts_num = request.form['tsnum']
-# 		questionNum = 0
-# 		return redirect(url_for('index'))
-# 	return '''<form method="post"> 
-# 				<label for="fname">Trial set num:</label><br>
-#   				<input type="number" id="tsnum" name="tsnum"><br>
-# 				<H1><input type=submit> 
-# 			</form>'''
-
-# def Start_nxt_Trial():
-# 	string trial_line;
-# 	if (questionNum > -1)
-# 		trial_line = questionNum + ", " + 
-# 						time_asked + ", " + Time.time + ", " + 
-# 						trialSet[trialSetNum, questionNum, 1] + ", " + 
-# 						trialSet[trialSetNum, questionNum, 2] + ", " + 
-# 						GameObject.Find("Weather1").GetComponent<AppManager>().user_manual_override + ", " +
-# 						GameObject.Find("Email2").GetComponent<AppManager>().user_manual_override + ", " +
-# 						GameObject.Find("Fitbit3").GetComponent<AppManager>().user_manual_override;
-# 		sessionLog.WriteLine(trial_line);
-# 	questionNum++;
-# 	if (questionNum < 9)
-# 		time_to_ask_next_Q = trialSet[trialSetNum, questionNum, 0] + Time.time;
-# 	else
-# 		solo = false;
-	
-# def Update_answer():
-# 	trialSet[ts_num][2]
 
 if __name__ == "__main__":
-	# For running on Server
-	try:
-		#app.run(host = "0.0.0.0" , port = 4443, debug=True )
-		# For running on localhodt:5000
-		# Start running the trials
-
-		app.run()
-	finally:
-		fitbit_file.close()
-		weather_file.close()
-		email_file.close()
 	
-
-
-# //	{ 20, 2, 1}, // End Trial 10
-# ////	{{ 20, 3, 4}, // End Trial 11
-# //		{ 15, 2, 2}, // End Trial 12
-# //		{ 10, 1, 2}, // End Trial 13
-# //		{ 20, 2, 4}, // End Trial 14
-# ////		{ 10, 1, 4} // End Trial 15
-# //			{ 10, 2, 1}, // End Trial 6
-# //			{ 10, 3, 3}, // End Trial 5
-# //			{ 45, 3, 2}, // End Trial 4
-# //			{ 10, 1, 1}, // End Trial 3
-# //			{ 15, 3, 3}, // End Trial 2
-# //			{ 20, 1, 4} // End Trial 1
-# }
+	app.run(host = "0.0.0.0" , port = 4443, debug=True )
+	
+	# For running on localhodt:5000
+	#app.run()
